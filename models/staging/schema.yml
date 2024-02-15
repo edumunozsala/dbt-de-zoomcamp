@@ -7,7 +7,7 @@ sources:
 
     tables:
       - name: green_taxi_2022
-      - name: yellow_taxi_2022
+      - name: yellow_taxi_data_2022
 
 models:
     - name: stg_green_tripdata

@@ -8,7 +8,7 @@ with tripdata as
 (
   select *,
     row_number() over(partition by Vendorid, tpep_pickup_datetime) as rn
-  from {{ source('staging','yellow_taxi_2022') }}
+  from {{ source('staging','yellow_taxi_data_2022') }}
   where Vendorid is not null 
 )
 select
@@ -20,10 +20,8 @@ select
     {{ dbt.safe_cast("DOLocationID", api.Column.translate_type("integer")) }} as dropoff_locationid,
     
     -- timestamps
-    -- cast(tpep_pickup_datetime as timestamp) as pickup_datetime,
-    TIMESTAMP_SECONDS(CAST(CAST(tpep_pickup_datetime as INT64)/1000000 AS INT64)) as pickup_datetime,
-    --cast(tpep_dropoff_datetime as timestamp) as dropoff_datetime,
-    TIMESTAMP_SECONDS(CAST(CAST(tpep_dropoff_datetime as INT64)/1000000 AS INT64)) as dropoff_datetime,
+    cast(tpep_pickup_datetime as timestamp) as pickup_datetime,
+    cast(tpep_dropoff_datetime as timestamp) as dropoff_datetime,
     
     -- trip info
     store_and_fwd_flag,
