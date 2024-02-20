@@ -6,8 +6,9 @@ sources:
     schema: ny_taxi
 
     tables:
-      - name: green_taxi_2022
-      - name: yellow_taxi_data_2022
+      - name: green_taxi_data
+      - name: yellow_taxi_data
+      - name: fhv_taxi_data
 
 models:
     - name: stg_green_tripdata
@@ -192,4 +193,44 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+
+    - name: stg_fhv_tripdata
+      description: >
+            For-Hire Vehicles provide pre-arranged service anywhere in New York City and are dispatched by TLC-licensed FHV bases. 
+            For-Hire Vehicles must be affiliated with a single FHV base, but may accept dispatches from any base. 
+            Currently, the TLC will only accept a new FHV application if the vehicle is wheelchair accessible, is an electric vehicle 
+            or if the driver has a lease-to-own contract 
+      columns:
+          - name: tripid
+            description: Primary key for this table, generated with a concatenation of base_dispatching_num+pickup_datetime
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: dispatching_base_num 
+            description: > 
+                The TLC license number of the base that dispatched the vehicle. Bases are only responsible for submitting records for trips that they dispatched, 
+                ie. trips for which they contacted the driver that serviced the trip. This must be provided for all trip records submitted to the TLC, 
+                even though the dispatching base may be the same for every record in the file. 
+          - name: pickup_datetime 
+            description:  The date when the passenger entered the vehicle. 
+          - name: dropoff_datetime 
+            description: The date of the scheduled dropoff. This is the date of the scheduled reservation.
+          - name: Pickup_locationid
+            description: locationid where the pickup ocurred.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: dropoff_locationid 
+            description: locationid where the dropoff was ocurred.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: Affiliated_base_number 
+            description: The base number of the base that received the original trip request.
             
