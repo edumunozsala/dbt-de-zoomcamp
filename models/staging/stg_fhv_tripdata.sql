@@ -10,6 +10,7 @@ with tripdata as
     row_number() over(partition by dispatching_base_num, pickup_datetime) as rn
   from {{ source('staging','fhv_taxi_data') }}
   where dispatching_base_num is not null 
+  and EXTRACT(YEAR FROM pickup_datetime)=2019
 )
 select
     -- identifiers
@@ -28,8 +29,6 @@ select
     SR_Flag,
     Affiliated_base_number
 from tripdata
-where EXTRACT(YEAR FROM pickup_datetime)=2019
-
 
 -- dbt build --select <model_name> --vars '{'is_test_run': 'false'}'
 {% if var('is_test_run', default=true) %}
