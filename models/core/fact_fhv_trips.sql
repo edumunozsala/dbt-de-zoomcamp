@@ -17,6 +17,7 @@ dim_zones as (
     where borough != 'Unknown'
 )
 select trips_unioned.tripid, 
+    trips_unioned.service_type,
     trips_unioned.dispatching_base_num, 
     trips_unioned.pickup_locationid, 
     pickup_zone.borough as pickup_borough, 
