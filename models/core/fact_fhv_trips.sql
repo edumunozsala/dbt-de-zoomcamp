@@ -9,28 +9,25 @@ with fhv_tripdata as (
         'FHV' as service_type
     from {{ ref('stg_fhv_tripdata') }}
 ), 
-trips_unioned as (
-    select * from fhv_tripdata
-), 
 dim_zones as (
     select * from {{ ref('dim_zones') }}
     where borough != 'Unknown'
 )
-select trips_unioned.tripid, 
-    trips_unioned.service_type,
-    trips_unioned.dispatching_base_num, 
-    trips_unioned.pickup_locationid, 
+select fhv_tripdata.tripid, 
+    fhv_tripdata.service_type,
+    fhv_tripdata.dispatching_base_num, 
+    fhv_tripdata.pickup_locationid, 
     pickup_zone.borough as pickup_borough, 
     pickup_zone.zone as pickup_zone, 
-    trips_unioned.dropoff_locationid,
+    fhv_tripdata.dropoff_locationid,
     dropoff_zone.borough as dropoff_borough, 
     dropoff_zone.zone as dropoff_zone,  
-    trips_unioned.pickup_datetime, 
-    trips_unioned.dropoff_datetime, 
-    trips_unioned.Affiliated_base_number,
-    trips_unioned.SR_Flag
-from trips_unioned
+    fhv_tripdata.pickup_datetime, 
+    fhv_tripdata.dropoff_datetime, 
+    fhv_tripdata.Affiliated_base_number,
+    fhv_tripdata.SR_Flag
+from fhv_tripdata
 inner join dim_zones as pickup_zone
-on trips_unioned.pickup_locationid = pickup_zone.locationid
+on fhv_tripdata.pickup_locationid = pickup_zone.locationid
 inner join dim_zones as dropoff_zone
-on trips_unioned.dropoff_locationid = dropoff_zone.locationid
+on fhv_tripdata.dropoff_locationid = dropoff_zone.locationid
