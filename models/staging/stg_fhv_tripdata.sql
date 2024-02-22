@@ -6,11 +6,12 @@
 
 with tripdata as 
 (
-  select *,
-    row_number() over(partition by dispatching_base_num, pickup_datetime) as rn
+  select *
+
   from {{ source('staging','fhv_taxi_data') }}
   where dispatching_base_num is not null 
   and EXTRACT(YEAR FROM pickup_datetime)=2019
+
 )
 select
     -- identifiers
